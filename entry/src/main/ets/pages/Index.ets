@@ -17,7 +17,6 @@ class KNBridgeObject {
   }
 }
 
-
 @Entry
 @Component
 struct Index {
@@ -30,10 +29,10 @@ struct Index {
           .fontSize(50)
           .fontWeight(FontWeight.Bold)
           .onClick(() => {
-            hilog.info(0x0000, 'testTag', 'Test NAPI 2 + 3 = %{public}d', testNapi.add(2, 3))
-            let a : KNBridgeObject = new KNBridgeObject()
-            a.foo("hello")
-            hilog.info(0x0000, 'testTag', 'Test NAPI 2 + 3 = %{public}d', a.foo("hello"));
+            let obj = new KNBridgeObject();
+            hilog.info(0x0000, 'testTag', '%s', obj.foo("hello"))
+            // hilog.info(0x0000, 'testTag', 'Test NAPI 2 + 3 = %{public}d', testNapi.inc(2))
+
           })
       }
       .width('100%')
