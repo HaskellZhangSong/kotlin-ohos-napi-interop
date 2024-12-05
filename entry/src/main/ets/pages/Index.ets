@@ -7,9 +7,11 @@ class KNBridgeObject {
   private _ptr_native: Ptr;
 
   public constructor() {
-    hilog.info(0x0000, 'testTag', 'Test NAPI 2 + 3 = %{public}s', "this is test");
-    this._ptr_native = testNapi.ObjBridge_create();
-    hilog.info(0x0000, 'testTag', 'Test NAPI 2 + 3 = %{public}s', "this is test");
+    let v = testNapi.ObjBridge_create();
+    hilog.info(0x0000, 'testTag', 'pointer passed into constructor = ' + v);
+    testNapi.ObjBridge_foo(v, "hello");
+    this._ptr_native = v
+    hilog.info(0x0000, 'testTag', 'pointer of this_ptr_native = ' + this._ptr_native);
   }
 
   public foo(x : string) : string {

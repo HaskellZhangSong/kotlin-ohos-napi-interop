@@ -66,21 +66,26 @@ static napi_value ObjBridge_create(napi_env env, napi_callback_info info) {
     dynamic_kref_KNObject kno = lib->kotlin.root.KNObject.KNObject();
     napi_value result;
     napi_create_external(env, (void *)kno.pinned, KNObject_Finalizer, NULL, &result);
+    OH_LOG_INFO(LOG_APP, "knopin %{public}p, kno: %{public}p, result: %{public}p", kno.pinned, kno, result);
     return result;
 }
 
 static napi_value ObjBridge_foo(napi_env env, napi_callback_info info) {
     dynamic_ExportedSymbols *lib = dynamic_symbols();
-    size_t argc = 2;
-    napi_value args[2] = {nullptr};
-    napi_get_cb_info(env, info, &argc, args, nullptr, nullptr);
+    size_t argc = 5;
+    napi_value args[5] = {nullptr};
+    
+    napi_value thiz;
+    napi_get_cb_info(env, info, &argc, args, &thiz, nullptr);
+    OH_LOG_INFO(LOG_APP, "this: %{public}p", thiz);
+    
     // get the pointer of KNObject
-
     dynamic_KNativePtr *obj;
     napi_get_value_external(env, args[0], obj);
-    
     // get the String
-    char buf[512];
+    OH_LOG_INFO(LOG_APP, "pointer: %{public}p, obj: %{public}p", args[0], obj);
+    
+    char buf[64];
     size_t copied_len;
     napi_get_value_string_utf8(env, args[1], buf, 512, &copied_len);
 
