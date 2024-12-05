@@ -1,6 +1,7 @@
 #include "napi/native_api.h"
 #include "dynamic_api.h"
 #include "hilog/log.h"
+#include <string.h>
 #undef LOG_DOMAIN
 #undef LOG_TAG
 #define LOG_DOMAIN 0x0000
@@ -77,7 +78,7 @@ static napi_value ObjBridge_foo(napi_env env, napi_callback_info info) {
     // get the pointer of KNObject
 
     dynamic_KNativePtr *obj;
-    napi_get_value_external(env, args[0], obj);
+    napi_get_value_external(env, args[0], (void**)&obj);
     
     // get the String
     char buf[512];
@@ -88,7 +89,7 @@ static napi_value ObjBridge_foo(napi_env env, napi_callback_info info) {
     const char *res = lib->kotlin.root.KNObject.foo(o, buf);
 
     napi_value result_js_string;
-    napi_create_string_utf8(env, res, 5, &result_js_string);
+    napi_create_string_utf8(env, res, strlen(res), &result_js_string);
     lib->DisposeString(res);
     return result_js_string;
 }
