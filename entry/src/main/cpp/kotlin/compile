@@ -1,0 +1,5 @@
+#!/bin/bash
+
+kotlinc-native-dev -p dynamic  -target ohos_arm64 KNObject.kt
+cp dynamic_api.h ../include/dynamic_api.h
+cp libdynamic.so ../../../../libs/arm64-v8a

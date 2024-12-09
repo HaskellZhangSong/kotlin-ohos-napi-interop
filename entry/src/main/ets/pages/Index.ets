@@ -7,9 +7,7 @@ class KNBridgeObject {
   private _ptr_native: Ptr;
 
   public constructor() {
-    hilog.info(0x0000, 'testTag', 'Test NAPI 2 + 3 = %{public}s', "this is test");
     this._ptr_native = testNapi.ObjBridge_create();
-    hilog.info(0x0000, 'testTag', 'Test NAPI 2 + 3 = %{public}s', "this is test");
   }
 
   public foo(x : string) : string {
@@ -30,7 +28,7 @@ struct Index {
           .fontWeight(FontWeight.Bold)
           .onClick(() => {
             let obj = new KNBridgeObject();
-            hilog.info(0x0000, 'testTag', '%s', obj.foo("hello"))
+            hilog.info(0x0000, 'testTag', '%s', obj.foo("0123456789ABCDEF"))
             // hilog.info(0x0000, 'testTag', 'Test NAPI 2 + 3 = %{public}d', testNapi.inc(2))
 
           })

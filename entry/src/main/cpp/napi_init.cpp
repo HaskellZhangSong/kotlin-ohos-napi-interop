@@ -1,14 +1,16 @@
 #include "napi/native_api.h"
 #include "dynamic_api.h"
 #include "hilog/log.h"
+#include <string.h>
 #undef LOG_DOMAIN
 #undef LOG_TAG
 #define LOG_DOMAIN 0x0000
 #define LOG_TAG "testTag"
 
+dynamic_ExportedSymbols *lib = dynamic_symbols();
+
 static napi_value inc(napi_env env, napi_callback_info info) {
     OH_LOG_INFO(LOG_APP, "called inc");
-    dynamic_ExportedSymbols *lib = dynamic_symbols();
     size_t argc = 1;
     napi_value args[1] = {nullptr};
     napi_get_cb_info(env, info, &argc, args, nullptr, nullptr);
@@ -27,7 +29,6 @@ static napi_value inc(napi_env env, napi_callback_info info) {
 static napi_value Add(napi_env env, napi_callback_info info)
 {
     OH_LOG_INFO(LOG_APP, "called add");
-    dynamic_ExportedSymbols* lib = dynamic_symbols();
     
     size_t argc = 2;
     napi_value args[2] = {nullptr};
@@ -49,20 +50,17 @@ static napi_value Add(napi_env env, napi_callback_info info)
 
 
 static napi_value get5(napi_env env, napi_callback_info info) {
-    dynamic_ExportedSymbols *lib = dynamic_symbols();
     dynamic_KInt res = lib->kotlin.root.get5();
     napi_value result;
     napi_create_int32(env, res, &result);
     return result;
 }
 
-void KNObject_Finalizer(napi_env env, void *data, void *hint) { 
-    dynamic_ExportedSymbols *lib = dynamic_symbols();
+void KNObject_Finalizer(napi_env env, void *data, void *hint) {
     lib->DisposeStablePointer(data); 
 }
 
 static napi_value ObjBridge_create(napi_env env, napi_callback_info info) {
-    dynamic_ExportedSymbols *lib = dynamic_symbols();
     dynamic_kref_KNObject kno = lib->kotlin.root.KNObject.KNObject();
     napi_value result;
     napi_create_external(env, (void *)kno.pinned, KNObject_Finalizer, NULL, &result);
@@ -70,26 +68,16 @@ static napi_value ObjBridge_create(napi_env env, napi_callback_info info) {
 }
 
 static napi_value ObjBridge_foo(napi_env env, napi_callback_info info) {
-    dynamic_ExportedSymbols *lib = dynamic_symbols();
     size_t argc = 2;
     napi_value args[2] = {nullptr};
     napi_get_cb_info(env, info, &argc, args, nullptr, nullptr);
     // get the pointer of KNObject
-
-    dynamic_KNativePtr *obj;
-    napi_get_value_external(env, args[0], obj);
     
-    // get the String
-    char buf[512];
-    size_t copied_len;
-    napi_get_value_string_utf8(env, args[1], buf, 512, &copied_len);
-
+    dynamic_KNativePtr *obj;
+    napi_get_value_external(env, args[0], (void**)&obj);
+    
     dynamic_kref_KNObject o = {.pinned = obj};
-    const char *res = lib->kotlin.root.KNObject.foo(o, buf);
-
-    napi_value result_js_string;
-    napi_create_string_utf8(env, res, 5, &result_js_string);
-    lib->DisposeString(res);
+    napi_value result_js_string = lib->kotlin.root.KNObject.foo(o, env, args[1]);
     return result_js_string;
 }
 
