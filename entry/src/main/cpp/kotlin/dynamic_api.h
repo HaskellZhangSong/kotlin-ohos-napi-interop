@@ -1,6 +1,5 @@
 #ifndef KONAN_DYNAMIC_H
 #define KONAN_DYNAMIC_H
-#include <napi/native_api.h>
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -106,7 +105,8 @@ typedef struct {
       struct {
         dynamic_KType* (*_type)(void);
         dynamic_kref_KNObject (*KNObject)();
-        napi_value (*foo)(dynamic_kref_KNObject thiz, napi_env napi_env, napi_value s);
+        const char* (*bar)(dynamic_kref_KNObject thiz);
+        void (*foo)(dynamic_kref_KNObject thiz, const char* s);
       } KNObject;
       dynamic_KInt (*add)(dynamic_KInt a, dynamic_KInt b);
       dynamic_KInt (*get5)();

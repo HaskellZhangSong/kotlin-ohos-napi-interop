@@ -76,8 +76,33 @@ static napi_value ObjBridge_foo(napi_env env, napi_callback_info info) {
     dynamic_KNativePtr *obj;
     napi_get_value_external(env, args[0], (void**)&obj);
     
+    size_t copied_len;
+    napi_get_value_string_utf8(env, args[1], NULL, NULL, &copied_len);
+    
+    char buf[copied_len];
+    napi_get_value_string_utf8(env, args[1], buf, copied_len, NULL);
+    
     dynamic_kref_KNObject o = {.pinned = obj};
-    napi_value result_js_string = lib->kotlin.root.KNObject.foo(o, env, args[1]);
+    lib->kotlin.root.KNObject.foo(o, buf);
+    napi_value undefined;
+    napi_get_undefined(env, &undefined);
+    return undefined;
+}
+
+
+static napi_value ObjBridge_bar(napi_env env, napi_callback_info info) {
+    size_t argc = 1;
+    napi_value args[1] = {nullptr};
+    napi_get_cb_info(env, info, &argc, args, nullptr, nullptr);
+    // get the pointer of KNObject
+    dynamic_KNativePtr *obj;
+    napi_get_value_external(env, args[0], (void**)&obj);
+    
+    dynamic_kref_KNObject o = {.pinned = obj};
+    const char* res = lib->kotlin.root.KNObject.bar(o);
+    napi_value result_js_string;
+    napi_create_string_utf8(env, res, strlen(res), &result_js_string);
+    lib->DisposeString(res);
     return result_js_string;
 }
 
@@ -89,6 +114,7 @@ static napi_value Init(napi_env env, napi_value exports) {
         {"add", nullptr, Add, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"ObjBridge_create", nullptr, ObjBridge_create, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"ObjBridge_foo", nullptr, ObjBridge_foo, nullptr, nullptr, nullptr, napi_default, nullptr},
+        {"ObjBridge_bar", nullptr, ObjBridge_bar, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"get5", nullptr, get5, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"inc", nullptr, inc, nullptr, nullptr, nullptr, napi_default, nullptr}
     };
