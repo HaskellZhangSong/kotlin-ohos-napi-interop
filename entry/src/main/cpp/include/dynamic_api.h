@@ -106,11 +106,9 @@ typedef struct {
       struct {
         dynamic_KType* (*_type)(void);
         dynamic_kref_KNObject (*KNObject)();
-        napi_value (*foo)(dynamic_kref_KNObject thiz, napi_env napi_env, napi_value s);
+        napi_value (*bar)(dynamic_kref_KNObject thiz, napi_env napi_env);
+        void (*foo)(dynamic_kref_KNObject thiz, napi_env napi_env, napi_value s);
       } KNObject;
-      dynamic_KInt (*add)(dynamic_KInt a, dynamic_KInt b);
-      dynamic_KInt (*get5)();
-      dynamic_KInt (*inc)(dynamic_KInt a);
     } root;
   } kotlin;
 } dynamic_ExportedSymbols;
